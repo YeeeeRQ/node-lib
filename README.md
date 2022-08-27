@@ -177,3 +177,41 @@ app.listen(APP_PORT, () => {
   console.log(`server is running on http://localhost:${APP_PORT}`);
 });
 ```
+
+### 将路由和控制器拆分
+
+路由：解析URL，分发给控制器对应的方法。
+控制器：处理不同的业务
+
+改写`user.route.js`
+
+```js
+const Router = require("koa-router");
+
+const { register, login } = require("../controller/user.controller");
+
+const router = new Router({ prefix: "/users" });
+
+// 注册接口
+router.post("/register", register);
+
+// 登录接口
+router.post("/login", login);
+
+module.exports = router;
+```
+
+创建`controller/user.controller.js`
+
+```js
+class UserController {
+  async register(ctx, next) {
+    ctx.body = "用户注册成功";
+  }
+
+  async login(ctx, next) {
+    ctx.body = "登录成功";
+  }
+}
+module.exports = new UserController();
+```
