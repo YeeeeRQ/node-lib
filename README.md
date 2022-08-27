@@ -148,3 +148,32 @@ app.listen(APP_PORT, () => {
 });
 
 ```
+
+## 目录结构优化
+
+### 将http服务和app业务拆分
+
+创建`src/app/index.js`
+
+```javascript
+const Koa = require("koa");
+const app = new Koa();
+
+const userRouter = require("../router/user.route");
+
+app.use(userRouter.routes());
+
+module.exports = app;
+```
+
+改写`main.js`
+
+```javascript
+const app = require("./app");
+
+const { APP_PORT } = require("./config/config.default");
+
+app.listen(APP_PORT, () => {
+  console.log(`server is running on http://localhost:${APP_PORT}`);
+});
+```
