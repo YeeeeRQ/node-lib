@@ -215,3 +215,72 @@ class UserController {
 }
 module.exports = new UserController();
 ```
+
+## 解析body
+
+### 安装koa-body
+
+```bash
+npm i koa-body
+```
+
+### 注册中间件（koa-body）
+
+改写`app/index.js`
+
+```js
+const Koa = require("koa");
+const userRouter = require("../router/user.route");
+const KoaBody = require("koa-body");
+
+const app = new Koa();
+
+app.use(KoaBody()); // 在所有中间件开头注册
+
+app.use(userRouter.routes());
+
+module.exports = app;
+```
+
+### 解析请求
+
+改写 `user.controller.js`
+
+```javascript
+const { createUser } = require("../service/user.service");
+class UserController {
+  async register(ctx, next) {
+    // 1. 获取数据
+    const { user_name, password } = ctx.request.body;
+    // 2. 操作数据库
+    const res = await createUser(user_name, password);
+    console.log(res);
+    // 3. 返回结果
+    ctx.body = ctx.request.body;
+  }
+
+  async login(ctx, next) {
+    ctx.body = "登录成功";
+  }
+}
+
+module.exports = new UserController();
+```
+
+### 拆分service层
+
+service层主要是做数据库的处理
+创建 `src/service/user.service.js`
+
+```js
+class UserService {
+  async createUser(user_name, password) {
+    // Todo: 写入数据库
+    // 模拟数据库写入
+    return "写入数据库成功";
+  }
+}
+
+module.exports = new UserService();
+
+```
